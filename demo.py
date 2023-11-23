@@ -1,8 +1,3 @@
-## Getting Started
-
-Use the code below:
-
-```python
 from net.util.plotters import plot,highlight
 import networkx as nx
 import matplotlib.pyplot as plt
@@ -22,6 +17,3 @@ plt.subplots_adjust(wspace=0.1)
 plot(g, ax=ax[0])
 highlight(g, p, ax=ax[1])
 fig.savefig("demo.png", bbox_inches='tight')
-```
-You will get:
-![hightlight_shortestpath](./demo/demo.png)
