@@ -1,7 +1,6 @@
 #include "algorithms.h"
 namespace algorithms {
-Graph takashami_tree(const Graph& g, vector<int> sources, int root)
-{
+Graph takashami_tree(const Graph& g, vector<int> sources, int root) {
     Graph tree;
     tree.add_node(root);
     auto& dist = g.get_dist();
@@ -24,8 +23,7 @@ Graph takashami_tree(const Graph& g, vector<int> sources, int root)
     return tree;
 }
 
-Graph extract_branch_tree(const Graph& tree, const vector<int>& sources, int root, vector<int>* branch_nodes)
-{
+Graph extract_branch_tree(const Graph& tree, const vector<int>& sources, int root, vector<int>* branch_nodes) {
     // ! make sure tree is actually a directed tree
     Graph t;
     unordered_set<int> visited;
@@ -40,8 +38,9 @@ Graph extract_branch_tree(const Graph& tree, const vector<int>& sources, int roo
                 visited.insert(node);
             }
             if (tree.indegree(node) > 1) {
-                if (branch_nodes)
+                if (branch_nodes) {
                     branch_nodes->push_back(node);
+                }
                 t.add_edge(edge_start, node, tree.distance(edge_start, node));
                 edge_start = node;
             }
@@ -51,12 +50,11 @@ Graph extract_branch_tree(const Graph& tree, const vector<int>& sources, int roo
             t.add_edge(edge_start, node, tree.distance(edge_start, node));
         }
     }
-//    t.draw("extract_tree");
+    //    t.draw("extract_tree");
     return t;
 }
 
-vector<int> find_equal_nodes(const Graph& g, const Graph& tree, int node)
-{
+vector<int> find_equal_nodes(const Graph& g, const Graph& tree, int node) {
     vector<int> equal_nodes;
     std::vector<int> children;
     auto& dist = g.get_dist();
@@ -69,14 +67,24 @@ vector<int> find_equal_nodes(const Graph& g, const Graph& tree, int node)
 
     for (auto& i : g.get_nodes()) {
         double temp_cost = dist[i][parent];
-        for (auto& c:children) {
+        for (auto& c : children) {
             temp_cost += dist[c][i];
         }
         if (temp_cost == orig_cost) {
             equal_nodes.push_back(i);
         }
-     }
+    }
     return equal_nodes;
 }
 
+Graph edmonds(Graph& g) {
+    Graph dmst;
+    auto n = g.get_vertices_number();
+    vector<int> in(n, -1);
+    vector<double> const_cost(n, 0);
+    vector<int> prev(n, -1);
+    vector<int> parent(n, -1);
+    vector<vector<int>> children(n, vector<int>());
+    return dmst;
 }
+}  // namespace algorithms
