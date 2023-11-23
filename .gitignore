@@ -28,3 +28,7 @@ tmp.txt
 /*.pdf
 *.dat
 main.py
+obj/
+*.so
+*.a
+/app
