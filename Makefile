@@ -38,15 +38,15 @@ all: $(APPNAME) $(LIBNAME)
 
 debug: $(APPNAME)_dbg $(DBGLIBNAME)
 
-$(APPNAME)_dbg: $(DBGOBJ)
-	$(CC) $(DBGCXXFLAGS) -o $@ -I$(SRCDIR) main.cc $^ $(LDFLAGS)
+$(APPNAME)_dbg: $(DBGOBJ) main.cc
+	$(CC) $(DBGCXXFLAGS) -o $@ -I$(SRCDIR) $^ $(LDFLAGS)
 
 $(DBGLIBNAME): $(DBGOBJ)
 	$(CC) $(DBGCXXFLAGS) -shared -o $@ -I$(SRCDIR) $^ $(LDFLAGS)
 
 # Builds the app
-$(APPNAME): $(OBJ)
-	$(CC) $(CXXFLAGS) -o $@ -I$(SRCDIR) main.cc $^ $(LDFLAGS)
+$(APPNAME): $(OBJ) main.cc
+	$(CC) $(CXXFLAGS) -o $@ -I$(SRCDIR) $^ $(LDFLAGS)
 # $(info CREATED $(APPNAME))
 
 $(LIBNAME): $(OBJ)
