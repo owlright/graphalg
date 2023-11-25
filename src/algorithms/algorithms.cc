@@ -39,7 +39,8 @@ void floyd_warshall(Mat<double>& distance, int n)
         }
     }
 }
-void floyd_warshall(double** distance, int n) {
+void floyd_warshall(double** distance, int n)
+{
     for (int k = 0; k < n; ++k) {
         for (int i = 0; i < n; ++i) {
             for (int j = 0; j < n; ++j) {
@@ -118,7 +119,7 @@ vector<double> yenksp(Graph& g, int src, int dest, int K, vector<Path>& A)
     A.push_back(p);
     for (int k = 1; k < K; k++) {
         auto& prevPath = A.at(k - 1);
-        for (auto i = 0; i < prevPath.size() - 1; i++) {
+        for (int i = 0; i < prevPath.size() - 1; i++) {
             int spurNode = prevPath[i];
             vector<int> rootPath(prevPath.begin(), prevPath.begin() + i + 1);
             auto rootPathCost = dijistra(g, rootPath.front(), rootPath.back());
@@ -129,7 +130,7 @@ vector<double> yenksp(Graph& g, int src, int dest, int K, vector<Path>& A)
                 if (rootPath == pslice) {
                     auto u = p.at(i);
                     auto v = p.at(i + 1);
-                    if (g.has_edge(u,v)) {
+                    if (g.has_edge(u, v)) {
                         edges_to_delete.push_back({ u, v });
                         weights_to_delete.push_back(g.weight(u, v));
                         g.remove_edge(u, v);
@@ -169,12 +170,12 @@ vector<double> yenksp(Graph& g, int src, int dest, int K, vector<Path>& A)
                 if (!found) {
                     B.push_back({ spurPathCost, totalPath });
                 }
-                for (auto index = 0; index < weights_to_delete.size(); index++) {
-                    g.add_edge(edges_to_delete[index].first, edges_to_delete[index].second, weights_to_delete[index]);
-                }
             } else {
                 // do nothing
                 ASSERT(spurPath.empty());
+            }
+            for (int index = 0; index < weights_to_delete.size(); index++) {
+                g.add_edge(edges_to_delete[index].first, edges_to_delete[index].second, weights_to_delete[index]);
             }
         }
         if (B.empty())
