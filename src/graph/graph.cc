@@ -200,12 +200,13 @@ double Graph::distance(int src, int dest) const
 double Graph::weight(int src, int dst) const
 {
     ASSERT(adjout.find(src) != adjout.end());
+    ASSERT(has_edge(src, dst));
     auto& vws = adjout.at(src);
     for (auto& [v, w] : vws) {
         if (v == dst)
             return w;
     }
-    ASSERT(false);
+    throw RuntimeError("edge %d->%d not exist", src, dst);
 }
 
 void Graph::draw(const char* filename, const char* engine)
