@@ -12,6 +12,48 @@ bool is_in_vector(const int& x, const vector<int> vec)
     return false;
 }
 
+void Graph::read_dot(const char* filename)
+{
+    // 打开 DOT 文件
+    FILE* dotFile = fopen(filename, "r");
+    if (!dotFile) {
+        throw RuntimeError("Failed to open %s.", filename);
+    }
+
+    // 读取 DOT 文件
+    Agraph_t* graph = agread(dotFile, NULL);
+    fclose(dotFile);
+
+    if (!graph) {
+        throw RuntimeError("Failed to read DOT file.");
+    }
+
+    // 输出节点和边的信息
+    Agnode_t* node;
+    Agedge_t* edge;
+
+    // 遍历节点
+    for (node = agfstnode(graph); node; node = agnxtnode(graph, node)) {
+        int u = atoi(agnameof(node));
+
+        // 遍历节点的出边
+        for (edge = agfstout(graph, node); edge; edge = agnxtout(graph, edge)) {
+            int v = atoi(agnameof(aghead(edge)));
+            if (u != v)
+                add_edge(u, v);
+        }
+
+        // 遍历节点的入边
+        for (edge = agfstin(graph, node); edge; edge = agnxtin(graph, edge)) {
+            int v = atoi(agnameof(aghead(edge)));
+            if (u != v)
+                add_edge(v, u);
+        }
+    }
+    // 关闭图
+    agclose(graph);
+}
+
 // Add edges
 void Graph::add_edge(int src, int dest, double weight, bool bidirectional)
 {

@@ -38,6 +38,9 @@ public:
     using EdgeWeight = pair<int, double>;
 
 public:
+    void read_dot(const char* filename);
+
+public:
     void add_edge(int src, int dest, double weight = 1.0, bool bidirectional = false);
     void set_weight(int src, int dest, double weight = 1.0);
     void remove_edge(int src, int dest);
