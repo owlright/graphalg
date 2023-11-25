@@ -32,3 +32,4 @@ obj/
 *.so
 *.a
 /app
+*.out

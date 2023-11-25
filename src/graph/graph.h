@@ -2,8 +2,10 @@
 #include <algorithm>
 #include <cstdarg>
 #include <graphviz/gvc.h>
+#include <iostream>
 #include <list>
 #include <map>
+#include <set>
 #include <stdexcept>
 #include <unordered_set>
 #include <utility>
@@ -146,3 +148,70 @@ private:
         }
     }
 };
+
+template <class T> std::ostream& operator<<(std::ostream& os, const std::vector<std::vector<T>>& matrix)
+{
+    for (const auto& row : matrix) {
+        for (const auto& element : row) {
+            os << element << " ";
+        }
+        os << std::endl;
+    }
+    return os;
+}
+
+template <class T> std::ostream& operator<<(std::ostream& os, const std::vector<T>& array)
+{
+    os << "[";
+    for (auto i = 0; i < array.size(); i++) {
+        if (i != 0)
+            os << ",";
+        os << array[i];
+    }
+    os << "]";
+    return os;
+}
+
+template <typename K, typename V> std::ostream& operator<<(std::ostream& os, const std::unordered_map<K, V>& map)
+{
+    for (const auto& [key, value] : map) {
+        os << key << ": " << value << ", ";
+    }
+    return os;
+}
+
+template <typename K, typename V> std::ostream& operator<<(std::ostream& os, const std::map<K, V>& map)
+{
+    for (const auto& [key, value] : map) {
+        os << key << ": " << value << ", ";
+    }
+    return os;
+}
+
+template <class T> std::ostream& operator<<(std::ostream& os, const std::unordered_set<T>& array)
+{
+    os << "[";
+    int count = 0;
+    for (const auto& i : array) {
+        if (count != 0)
+            os << ",";
+        os << i;
+        count++;
+    }
+    os << "]";
+    return os;
+}
+
+template <class T> std::ostream& operator<<(std::ostream& os, const std::set<T>& array)
+{
+    os << "[";
+    int count = 0;
+    for (const auto& i : array) {
+        if (count != 0)
+            os << ",";
+        os << i;
+        count++;
+    }
+    os << "]";
+    return os;
+}
