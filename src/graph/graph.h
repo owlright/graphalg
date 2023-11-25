@@ -8,6 +8,7 @@
 #include <utility>
 #include <vector>
 
+#ifdef DEBUG
 #define ASSERT(expr)                                                                                                   \
     do {                                                                                                               \
         if (!(expr)) {                                                                                                 \
@@ -15,6 +16,11 @@
                 + __FUNCTION__ + "' at " + __FILE__ + ":" + std::to_string(__LINE__));                                 \
         }                                                                                                              \
     } while (false)
+#else
+#define ASSERT(expr)                                                                                                   \
+    do {                                                                                                               \
+    } while (false)
+#endif
 
 using std::list;
 using std::make_pair;
@@ -31,7 +37,6 @@ public:
     using EdgeWeight = pair<int, double>;
 
 public:
-    explicit Graph() {};
     void add_edge(int src, int dest, double weight = 1.0, bool bidirectional = false);
     void set_weight(int src, int dest, double weight = 1.0);
     void remove_edge(int src, int dest);
@@ -49,7 +54,7 @@ public:
 
 public:
     const vector<int>& get_nodes() const { return nodes; }
-    const Mat<double>& get_dist() const;
+    double** get_dist() const;
     const vector<EdgeWeight>& out_neighbors(int src) const
     {
         ASSERT(adjout.find(src) != adjout.end());
@@ -67,9 +72,23 @@ public:
     void draw(const char* filename);
 
 private:
-    Mat<double> dist;
+    double** dist { nullptr };
     std::vector<int> nodes;
     int max_vertice { -1 };
     map<int, vector<EdgeWeight>> adjout;
     map<int, vector<EdgeWeight>> adjin;
+
+public:
+    explicit Graph();
+    ~Graph();
+    Graph(const Graph& other);
+    // assign constructor;
+    // Graph a, b
+    // a = b will call this;
+    Graph& operator=(const Graph& other);
+    // Move constructor
+    Graph(Graph&& other);
+    // Move assignment operator
+    // auto a = getNetworkCopy() will call this
+    Graph& operator=(Graph&& other);
 };

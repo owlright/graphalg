@@ -3,7 +3,7 @@ namespace algorithms {
 Graph takashami_tree(const Graph& g, vector<int> sources, int root) {
     Graph tree;
     tree.add_node(root);
-    auto& dist = g.get_dist();
+    auto dist = g.get_dist();
     for (auto& s : sources) {
         double min_dist = INFINITY;
         int node_in_tree = -1;
@@ -57,7 +57,7 @@ Graph extract_branch_tree(const Graph& tree, const vector<int>& sources, int roo
 vector<int> find_equal_nodes(const Graph& g, const Graph& tree, int node) {
     vector<int> equal_nodes;
     std::vector<int> children;
-    auto& dist = g.get_dist();
+    auto dist = g.get_dist();
     int parent = tree.out_neighbors(node).at(0).first;
     double orig_cost = tree.out_neighbors(node).at(0).second;
     for (auto& [v, w] : tree.in_neighbors(node)) {
