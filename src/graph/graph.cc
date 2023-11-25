@@ -17,7 +17,7 @@ void Graph::read_dot(const char* filename)
     // 打开 DOT 文件
     FILE* dotFile = fopen(filename, "r");
     if (!dotFile) {
-        throw RuntimeError("Failed to open %s.", filename);
+        throw cRuntimeError("Failed to open %s.", filename);
     }
 
     // 读取 DOT 文件
@@ -25,7 +25,7 @@ void Graph::read_dot(const char* filename)
     fclose(dotFile);
 
     if (!graph) {
-        throw RuntimeError("Failed to read DOT file.");
+        throw cRuntimeError("Failed to read DOT file.");
     }
 
     // 输出节点和边的信息
@@ -92,8 +92,8 @@ void Graph::set_weight(int src, int dest, double weight)
 
 void Graph::remove_edge(int src, int dest)
 {
-    ASSERT(adjin.find(src) != adjin.end());
-    ASSERT(adjout.find(dest) != adjout.end());
+    ASSERT(adjin.find(dest) != adjin.end());
+    ASSERT(adjout.find(src) != adjout.end());
     if (has_edge(src, dest)) {
         auto remove_adj = [](vector<EdgeWeight>& vw, const int& node) {
             int index = 0;
@@ -136,9 +136,9 @@ void Graph::remove_node(int n)
         }
     }
 }
-bool Graph::has_node(int n) { return is_in_vector(n, nodes); }
+bool Graph::has_node(int n) const { return is_in_vector(n, nodes); }
 
-bool Graph::has_edge(const int& src, const int& dest)
+bool Graph::has_edge(const int& src, const int& dest) const
 {
     if (adjout.find(src) == adjout.end()) {
         return false;
@@ -153,7 +153,7 @@ bool Graph::has_edge(const int& src, const int& dest)
     return false;
 }
 
-bool Graph::has_edge(const Edge& e)
+bool Graph::has_edge(const Edge& e) const
 {
     auto& src = e.first;
     auto& dest = e.second;
@@ -206,7 +206,7 @@ double Graph::weight(int src, int dst) const
         if (v == dst)
             return w;
     }
-    throw RuntimeError("edge %d->%d not exist", src, dst);
+    throw cRuntimeError("edge %d->%d not exist", src, dst);
 }
 
 void Graph::draw(const char* filename, const char* engine)

@@ -46,9 +46,9 @@ public:
     void remove_edge(int src, int dest);
     void add_node(int n);
     void remove_node(int n);
-    bool has_node(int n);
-    bool has_edge(const int& src, const int& dest);
-    bool has_edge(const Edge&);
+    bool has_node(int n) const;
+    bool has_edge(const int& src, const int& dest) const;
+    bool has_edge(const Edge&) const;
 
     void update_dist();
     double distance(int src, int dest) const;
@@ -61,13 +61,18 @@ public:
     double** get_dist() const;
     const vector<EdgeWeight>& out_neighbors(int src) const
     {
-        ASSERT(adjout.find(src) != adjout.end());
-        return adjout.at(src);
+        if (adjout.find(src) != adjout.end()) {
+            return adjout.at(src);
+        } else {
+            return emptyEdge;
+        }
     }
     const vector<EdgeWeight>& in_neighbors(int src) const
     {
-        ASSERT(adjin.find(src) != adjin.end());
-        return adjin.at(src);
+        if (adjin.find(src) != adjin.end()) {
+            return adjin.at(src);
+        }
+        return emptyEdge;
     }
     int indegree(int v) const { return adjin.at(v).size(); }
     int outdegree(int v) const { return adjout.at(v).size(); }
@@ -81,6 +86,7 @@ private:
     int max_vertice { -1 };
     map<int, vector<EdgeWeight>> adjout;
     map<int, vector<EdgeWeight>> adjin;
+    vector<EdgeWeight> emptyEdge;
 
 public:
     explicit Graph();
