@@ -166,7 +166,7 @@ double Graph::weight(int src, int dst) const
     ASSERT(false);
 }
 
-void Graph::draw(const char* filename)
+void Graph::draw(const char* filename, const char* engine)
 {
     // set up a graphviz context
     GVC_t* gvc = gvContext();
@@ -203,8 +203,14 @@ void Graph::draw(const char* filename)
     agsafeset(g, overlap, False, empty);
 
     // Compute a layout using layout engine from command line args
-    gvLayout(gvc, g, "neato");
-    gvRenderFilename(gvc, g, "png", (std::string(filename) + ".png").c_str());
+    gvLayout(gvc, g, engine);
+    const char* dotPos = strrchr(filename, '.');
+    if (dotPos) {
+        const char* ext = dotPos + 1;
+        gvRenderFilename(gvc, g, ext, filename);
+    } else {
+        gvRenderFilename(gvc, g, "png", (std::string(filename) + ".png").c_str());
+    }
     // Write the graph according to -T and -o options
     gvRenderJobs(gvc, g);
 
