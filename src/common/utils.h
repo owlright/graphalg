@@ -10,7 +10,6 @@
 #include <unordered_map>
 #include <unordered_set>
 #include <vector>
-#include <stdexcept>
 
 #ifdef DEBUG
 #define ASSERT(expr)                                                                                                   \
@@ -32,9 +31,9 @@ using std::list;
 using std::make_pair;
 using std::map;
 using std::pair;
+using std::runtime_error;
 using std::unordered_set;
 using std::vector;
-using std::runtime_error;
 
 namespace graphalg {
 
@@ -85,11 +84,13 @@ private:
 
 template <class T> std::ostream& operator<<(std::ostream& os, const std::vector<std::vector<T>>& matrix)
 {
-    for (const auto& row : matrix) {
+    for (auto i = 0; i < matrix.size(); i++) {
+        const auto& row = matrix[i];
         for (const auto& element : row) {
             os << element << " ";
         }
-        os << std::endl;
+        if (i != matrix.size() - 1)
+            os << std::endl;
     }
     return os;
 }

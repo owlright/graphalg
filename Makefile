@@ -17,6 +17,7 @@ OBJDIR = obj
 
 ############## Do not change anything from here downwards! #############
 SRC := $(shell find $(SRCDIR) -type f -name '*$(EXT)')
+INC := $(shell find $(SRCDIR) -type f -name '*.h')
 OBJ := $(SRC:$(SRCDIR)/%$(EXT)=$(OBJDIR)/%.o)
 DEP := $(SRC:$(SRCDIR)/%$(EXT)=$(OBJDIR)/%.d)
 DBGOBJ := $(SRC:$(SRCDIR)/%$(EXT)=$(OBJDIR)/%_dbg.o)
@@ -42,7 +43,7 @@ $(APPNAME)_dbg: $(DBGOBJ) main.cc
 	$(CC) $(DBGCXXFLAGS) -o $@ -I$(SRCDIR) $^ $(LDFLAGS)
 
 $(DBGLIBNAME): $(DBGOBJ)
-	$(CC) $(DBGCXXFLAGS) -shared -o $@ -I$(SRCDIR) $^ $(LDFLAGS)
+	$(CC) $(DBGCXXFLAGS) -shared -o $@ $^ $(LDFLAGS)
 
 # Builds the app
 $(APPNAME): $(OBJ) main.cc
@@ -50,16 +51,16 @@ $(APPNAME): $(OBJ) main.cc
 # $(info CREATED $(APPNAME))
 
 $(LIBNAME): $(OBJ)
-	$(CC) $(CXXFLAGS) -shared -o $@ -I$(SRCDIR) $^ $(LDFLAGS)
+	$(CC) $(CXXFLAGS) -shared -o $@ $^ $(LDFLAGS)
 
 # Building rule for .o files and its .c/.cpp in combination with all .h
-$(OBJDIR)/%.o: $(SRCDIR)/%$(EXT)
+$(OBJDIR)/%.o: $(SRCDIR)/%$(EXT) $(INC)
 	@mkdir -p $(@D)
-	$(CC) $(CXXFLAGS) -fPIC -o $@ -I$(SRCDIR) -c $<
+	$(CC) $(CXXFLAGS) -fPIC -o $@ -c $<
 
-$(OBJDIR)/%_dbg.o: $(SRCDIR)/%$(EXT)
+$(OBJDIR)/%_dbg.o: $(SRCDIR)/%$(EXT) $(INC)
 	@mkdir -p $(@D)
-	$(CC) $(DBGCXXFLAGS) -fPIC -o $@ -I$(SRCDIR) -c $<
+	$(CC) $(DBGCXXFLAGS) -fPIC -o $@ -c $<
 
 # Creates the dependecy rules
 $(OBJDIR)/%.d: $(SRCDIR)/%$(EXT)
