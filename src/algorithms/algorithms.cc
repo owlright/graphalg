@@ -1,7 +1,7 @@
 #include "algorithms.h"
-#include <unordered_set>
 #include <algorithm>
 #include <cmath>
+#include <unordered_set>
 
 namespace graphalg::algorithms {
 
@@ -169,7 +169,8 @@ vector<double> yenksp(Graph& g, int src, int dest, int K, vector<Path>& A)
     return distances;
 }
 
-Graph takashami_tree(const Graph& g, vector<int> sources, int root) {
+Graph takashami_tree(const Graph& g, vector<int> sources, int root)
+{
     Graph tree;
     tree.add_node(root);
     auto dist = g.get_dist();
@@ -188,11 +189,11 @@ Graph takashami_tree(const Graph& g, vector<int> sources, int root) {
             tree.add_edge(path[i], path[i + 1], g.weight(path[i], path[i + 1]));
         }
     }
-    tree.draw("tree");
     return tree;
 }
 
-Graph extract_branch_tree(const Graph& tree, const vector<int>& sources, int root, vector<int>* branch_nodes) {
+Graph extract_branch_tree(const Graph& tree, const vector<int>& sources, int root, vector<int>* branch_nodes)
+{
     // ! make sure tree is actually a directed tree
     Graph t;
     unordered_set<int> visited;
@@ -219,11 +220,12 @@ Graph extract_branch_tree(const Graph& tree, const vector<int>& sources, int roo
             t.add_edge(edge_start, node, tree.distance(edge_start, node));
         }
     }
-    //    t.draw("extract_tree");
     return t;
 }
 
-vector<int> find_equal_nodes(const Graph& g, const Graph& tree, int node) {
+vector<int> find_equal_nodes(
+    const Graph& g, const Graph& tree, int node, const std::unordered_set<int>& forbiddens, double threshold)
+{
     vector<int> equal_nodes;
     std::vector<int> children;
     auto dist = g.get_dist();
@@ -235,18 +237,22 @@ vector<int> find_equal_nodes(const Graph& g, const Graph& tree, int node) {
     }
 
     for (auto& i : g.get_nodes()) {
-        double temp_cost = dist[i][parent];
-        for (auto& c : children) {
-            temp_cost += dist[c][i];
-        }
-        if (temp_cost == orig_cost) {
-            equal_nodes.push_back(i);
+        ASSERT(dist);
+        if (forbiddens.find(i) == forbiddens.end()) {
+            double temp_cost = dist[i][parent];
+            for (auto& c : children) {
+                temp_cost += dist[c][i];
+            }
+            if (std::abs(temp_cost - orig_cost) < threshold) {
+                equal_nodes.push_back(i);
+            }
         }
     }
     return equal_nodes;
 }
 
-Graph edmonds(Graph& g) {
+Graph edmonds(Graph& g)
+{
     Graph dmst;
     auto n = g.get_vertices_number();
     vector<int> in(n, -1);
