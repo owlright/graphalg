@@ -238,12 +238,12 @@ vector<int> find_equal_nodes(
 
     for (auto& i : g.get_nodes()) {
         ASSERT(dist);
-        if (forbiddens.find(i) == forbiddens.end()) {
+        if (forbiddens.find(i) == forbiddens.end() && i!=node) {
             double temp_cost = dist[i][parent];
             for (auto& c : children) {
                 temp_cost += dist[c][i];
             }
-            if (std::abs(temp_cost - orig_cost) < threshold) {
+            if (std::abs(temp_cost - orig_cost) <= threshold) {
                 equal_nodes.push_back(i);
             }
         }
