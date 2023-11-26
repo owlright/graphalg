@@ -1,7 +1,10 @@
 #include "graph.h"
 #include "../algorithms/algorithms.h"
-using namespace algorithms;
+#include <algorithm>
+#include <graphviz/gvc.h>
 
+namespace graphalg {
+using namespace graphalg::algorithms;
 bool is_in_vector(const int& x, const vector<int> vec)
 {
     for (auto& i : vec) {
@@ -193,7 +196,7 @@ double Graph::distance(int src, int dest) const
     if (dist) {
         return dist[src][dest];
     } else {
-        return algorithms::dijistra(*this, src, dest);
+        return dijistra(*this, src, dest);
     }
 }
 
@@ -328,4 +331,5 @@ Graph& Graph::operator=(Graph&& other)
         adjout = std::move(other.adjout);
     }
     return *this;
+}
 }

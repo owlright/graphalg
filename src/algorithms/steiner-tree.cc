@@ -1,5 +1,7 @@
 #include "algorithms.h"
-namespace algorithms {
+#include <cmath>
+
+namespace graphalg::algorithms {
 Graph takashami_tree(const Graph& g, vector<int> sources, int root) {
     Graph tree;
     tree.add_node(root);
