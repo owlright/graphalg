@@ -2,6 +2,8 @@
 #include "../algorithms/algorithms.h"
 #include <algorithm>
 #include <graphviz/gvc.h>
+#include <stack>
+using std::stack;
 
 namespace graphalg {
 using namespace graphalg::algorithms;
@@ -55,6 +57,34 @@ void Graph::read_dot(const char* filename)
     }
     // 关闭图
     agclose(graph);
+}
+
+vector<int> Graph::dfs(int root, bool directionOut) const
+{
+    ASSERT(has_node(root));
+    vector<int> result;
+    stack<int> st;
+    st.push(root);
+    bool visited[max_vertice + 1]; // TODO this may comsume too much memory
+    for (auto& v : visited) {
+        v = false;
+    }
+    result.push_back(root);
+    visited[root] = true;
+    auto& adj = directionOut ? adjout : adjin;
+    while (!st.empty()) {
+        auto u = st.top();
+        st.pop();
+        if (!visited[u]) {
+            visited[u] = true;
+            result.push_back(u);
+        }
+        for (auto& [v, w] : adj.at(u)) {
+            if (!visited[v])
+                st.push(v);
+        }
+    }
+    return result;
 }
 
 // Add edges
