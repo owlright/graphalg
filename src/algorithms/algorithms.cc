@@ -1,10 +1,9 @@
 #include "algorithms.h"
+#include "../common/print.h"
 #include <algorithm>
 #include <cmath>
-#include <unordered_set>
-
+#include <stack>
 namespace graphalg::algorithms {
-
 bool operator==(const std::vector<int>& vec1, const std::vector<int>& vec2)
 {
     if (vec1.size() != vec2.size()) {
@@ -178,11 +177,52 @@ Graph takashami_tree(const Graph& g, vector<int> sources, int root)
         }
         std::vector<int> path;
         dijistra(g, s, node_in_tree, &path);
+        if (path.size() < 2) {
+            throw cRuntimeError("graph is not connected");
+        }
         for (auto i = 0; i < path.size() - 1; i++) {
             tree.add_edge(path[i], path[i + 1], g.weight(path[i], path[i + 1]));
         }
     }
     return tree;
+}
+
+vector<Graph> takashami_tree_K(const Graph& g, vector<int> sources, int root, int K)
+{
+    using ::operator<<;
+    vector<Graph> trees { takashami_tree(g, sources, root) };
+    vector<int> branchNodes;
+    unordered_set<int> visited;
+    unordered_set<int> hosts;
+    for (auto& n : g.get_nodes()) {
+        if (g.outdegree(n) == 1) {
+            hosts.insert(n);
+        }
+    }
+
+    for (auto i = 1; i < K; i++) {
+        auto t = trees.back();
+        branchNodes.clear();
+        auto branchTree = extract_branch_tree(t, sources, root, &branchNodes);
+        for (auto b : branchNodes) {
+            if (visited.find(b) == visited.end()) {
+                visited.insert(b);
+                vector<int> equals = find_equal_nodes(g, branchTree, b, hosts);
+                auto gcopy = g;
+                gcopy.remove_node(b);
+                for (auto n : equals) {
+                    gcopy.remove_node(n);
+                }
+                try {
+                    auto tnew = takashami_tree(gcopy, sources, root);
+                    trees.push_back(tnew);
+                } catch (cRuntimeError& e) {
+                    continue;
+                }
+            }
+        }
+    }
+    return trees;
 }
 
 Graph extract_branch_tree(const Graph& tree, const vector<int>& sources, int root, vector<int>* branch_nodes)
