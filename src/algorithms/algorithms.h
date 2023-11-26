@@ -11,9 +11,27 @@ namespace algorithms {
     using std::priority_queue;
     using std::unordered_set;
     using diPair = pair<double, int>;
+    using iiPair = pair<int, int>;
     using Path = vector<int>;
     using CostPath = pair<double, Path>;
-    using std::vector;
+
+    template <typename T> struct CompareFirst {
+        bool operator()(const T& a, const T& b) const { return a.first > b.first; }
+    };
+
+    template <typename K, typename V>
+    std::ostream& operator<<(std::ostream& os,
+        const std::priority_queue<std::pair<K, V>, std::deque<std::pair<K, V>>, CompareFirst<std::pair<K, V>>>& pq)
+    {
+        std::priority_queue<std::pair<K, V>, std::deque<std::pair<K, V>>, CompareFirst<std::pair<K, V>>> tmpQueue = pq;
+
+        while (!tmpQueue.empty()) {
+            os << "(" << tmpQueue.top().first << ", " << tmpQueue.top().second << ") ";
+            tmpQueue.pop();
+        }
+
+        return os;
+    }
 
     void floyd_warshall(double** distance, int n);
     double dijistra(const Graph& g, int src, int dest, vector<int>* path = nullptr);

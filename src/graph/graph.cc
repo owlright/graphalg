@@ -217,7 +217,6 @@ void Graph::update_dist()
 
 double** Graph::get_dist() const
 {
-    ASSERT(dist);
     return dist;
 }
 

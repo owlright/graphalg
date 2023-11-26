@@ -33,18 +33,11 @@ void floyd_warshall(double** distance, int n)
         }
     }
 }
-// Comparison function to compare std::pair<double, int> based on the first element (double value)
-struct CompareDiPair {
-    bool operator()(const diPair& a, const diPair& b)
-    {
-        return a.first > b.first; // Comparing based on the first element (double value)
-    }
-};
 
 double dijistra(const Graph& g, int src, int dest, vector<int>* path)
 {
     int n = g.get_max_vertice() + 1;
-    priority_queue<diPair, std::deque<diPair>, CompareDiPair> pq;
+    priority_queue<diPair, std::deque<diPair>, CompareFirst<diPair>> pq;
     vector<double> dist(n, INFINITY);
     vector<int> prev(n, -1);
     pq.push(make_pair(0.0, src));
@@ -238,7 +231,7 @@ vector<int> find_equal_nodes(
 
     for (auto& i : g.get_nodes()) {
         ASSERT(dist);
-        if (forbiddens.find(i) == forbiddens.end() && i!=node) {
+        if (forbiddens.find(i) == forbiddens.end() && i != node) {
             double temp_cost = dist[i][parent];
             for (auto& c : children) {
                 temp_cost += dist[c][i];
