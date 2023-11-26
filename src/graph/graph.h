@@ -63,14 +63,15 @@ private:
 public:
     explicit Graph();
     ~Graph();
+    // copy constructor
     Graph(const Graph& other);
-    // assign constructor;
-    // Graph a, b
+    // move constructor
+    Graph(Graph&& other);
+    // copy assignment operator
     // a = b will call this;
     Graph& operator=(const Graph& other);
-    // Move constructor
-    Graph(Graph&& other);
-    // Move assignment operator
+    // move assignment operator
+    // a = std::move(b)
     // auto a = getNetworkCopy() will call this
     Graph& operator=(Graph&& other);
 };

@@ -310,8 +310,11 @@ Graph::~Graph()
         free(dist);
     }
 }
+
+// copy constructor
 Graph::Graph(const Graph& other)
 {
+    // cout << "copy constructor" << endl;
     nodes = other.nodes;
     max_vertice = other.max_vertice;
     adjin = other.adjin;
@@ -325,9 +328,24 @@ Graph::Graph(const Graph& other)
             memcpy(dist[i], other.dist[i], n * sizeof(double));
         }
     }
+
 }
+// move constructor
+Graph::Graph(Graph&& other)
+{
+    // cout << "move constructor"<<endl;
+    // Transfer ownership of the memory
+    dist = other.dist;
+    other.dist = nullptr;
+    nodes = std::move(other.nodes);
+    max_vertice = other.max_vertice;
+    adjin = std::move(other.adjin);
+    adjout = std::move(other.adjout);
+}
+
 Graph& Graph::operator=(const Graph& other)
 {
+    // cout << "copy assignment constructor" <<endl;
     if (this != &other) {
         nodes = other.nodes;
         max_vertice = other.max_vertice;
@@ -338,19 +356,9 @@ Graph& Graph::operator=(const Graph& other)
     return *this;
 }
 
-Graph::Graph(Graph&& other)
-{
-    // Transfer ownership of the memory
-    dist = other.dist;
-    other.dist = nullptr;
-    nodes = std::move(other.nodes);
-    max_vertice = other.max_vertice;
-    adjin = std::move(other.adjin);
-    adjout = std::move(other.adjout);
-}
-
 Graph& Graph::operator=(Graph&& other)
 {
+    // cout << "move assignment constructor"<<endl;
     if (this != &other) {
         // Transfer ownership of the memory
         dist = other.dist;
@@ -362,4 +370,6 @@ Graph& Graph::operator=(Graph&& other)
     }
     return *this;
 }
+
+
 }
