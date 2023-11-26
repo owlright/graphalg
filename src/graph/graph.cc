@@ -3,10 +3,10 @@
 #include <algorithm>
 #include <graphviz/gvc.h>
 #include <stack>
-using std::stack;
 
 namespace graphalg {
 using namespace graphalg::algorithms;
+using std::stack;
 bool is_in_vector(const int& x, const vector<int> vec)
 {
     for (auto& i : vec) {

@@ -1,8 +1,9 @@
 #pragma once
 #include "../common/utils.h"
-
+#include <map>
 namespace graphalg {
-
+using std::map;
+using std::pair;
 class Graph {
 public:
     using Edge = pair<int, int>;
