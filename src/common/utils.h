@@ -10,6 +10,8 @@
 #include <unordered_map>
 #include <unordered_set>
 #include <vector>
+#include <ctime>
+#include <iomanip>
 
 #ifdef DEBUG
 #define ASSERT(expr)                                                                                                   \
@@ -149,4 +151,16 @@ template <class T> std::ostream& operator<<(std::ostream& os, const std::set<T>&
     }
     os << "]";
     return os;
+}
+
+inline void printNiceTime(time_t& now)
+{
+    std::tm* localTime = std::localtime(&now);
+    int hours = localTime->tm_hour;
+    int minutes = localTime->tm_min;
+    int seconds = localTime->tm_sec;
+    char buffer[10];
+    memset(buffer, 0, sizeof(buffer));
+    sprintf(buffer, "%d:%d:%d", hours, minutes, seconds);
+    cout << std::left << std::setw(11) << buffer << endl;
 }
