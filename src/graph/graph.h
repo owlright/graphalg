@@ -11,8 +11,6 @@ using Edge = pair<int, int>;
 using EdgeWeight = pair<int, double>;
 class Graph {
 public:
-
-public:
     void read_dot(const char* filename);
     vector<int> dfs(int root, bool directionOut = true) const;
     vector<int> bfs(int root, bool directionOut = true) const;
@@ -54,6 +52,7 @@ public:
     }
     int indegree(int v) const { return adjin.at(v).size(); }
     int outdegree(int v) const { return adjout.at(v).size(); }
+    double get_cost() const;
 
 public:
     void draw(const char* filename, const char* engine = "neato");

@@ -295,37 +295,5 @@ Graph edmonds(Graph& g)
     vector<vector<int>> children(n, vector<int>());
     return dmst;
 }
-using std::stack;
-double cost(const Graph& g)
-{
-    int root = -1;
-    for (auto& n : g.get_nodes()) {
-        if (g.outdegree(n) == 0)
-            root = n;
-    }
-    ASSERT(root > 0);
-    double result = 0;
-    stack<int> st;
-    st.push(root);
-    bool visited[g.get_max_vertice() + 1]; // TODO this may comsume too much memory
-    for (auto& v : visited) {
-        v = false;
-    }
 
-    visited[root] = true;
-
-    while (!st.empty()) {
-        auto u = st.top();
-        st.pop();
-        if (!visited[u]) {
-            visited[u] = true;
-        }
-        for (auto& [v, w] : g.in_neighbors(u)) {
-            result += w;
-            if (!visited[v])
-                st.push(v);
-        }
-    }
-    return result;
-}
 }
