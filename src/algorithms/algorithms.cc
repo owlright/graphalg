@@ -97,7 +97,7 @@ vector<double> yenksp(Graph& g, int src, int dest, int K, vector<Path>& A)
             vector<int> rootPath(prevPath.begin(), prevPath.begin() + i + 1);
             auto rootPathCost = dijistra(g, rootPath.front(), rootPath.back());
             vector<double> weights_to_delete;
-            vector<Graph::Edge> edges_to_delete;
+            vector<Edge> edges_to_delete;
             for (auto& p : A) {
                 vector<int> pslice(p.begin(), p.begin() + i + 1);
                 if (rootPath == pslice) {

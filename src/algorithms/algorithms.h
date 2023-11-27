@@ -14,14 +14,8 @@ namespace algorithms {
     using std::priority_queue;
     using std::unordered_set;
     using std::vector;
-    using diPair = pair<double, int>;
-    using iiPair = pair<int, int>;
     using Path = vector<int>;
     using CostPath = pair<double, Path>;
-
-    template <typename T> struct CompareFirst {
-        bool operator()(const T& a, const T& b) const { return a.first > b.first; }
-    };
 
     template <typename K, typename V>
     std::ostream& operator<<(std::ostream& os,

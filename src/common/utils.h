@@ -4,6 +4,7 @@
 #include <cstring>
 #include <stdexcept>
 #include <vector>
+#include <utility>
 
 #ifdef DEBUG
 #define ASSERT(expr)                                                                                                   \
@@ -68,3 +69,10 @@ private:
     }
 };
 }
+
+template <typename T> struct CompareFirst {
+    bool operator()(const T& a, const T& b) const { return a.first > b.first; }
+};
+
+using diPair = std::pair<double, int>;
+using iiPair = std::pair<int, int>;
