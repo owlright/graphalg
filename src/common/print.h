@@ -35,6 +35,13 @@ template <class T> std::ostream& operator<<(std::ostream& os, const std::vector<
     return os;
 }
 
+template <typename K, typename V> std::ostream& operator<<(std::ostream& os, const std::pair<K, V>& p)
+{
+    os << "(" << p.first << ", " << p.second << ")";
+    return os;
+}
+
+
 template <typename K, typename V> std::ostream& operator<<(std::ostream& os, const std::unordered_map<K, V>& map)
 {
     for (const auto& [key, value] : map) {
