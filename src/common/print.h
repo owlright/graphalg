@@ -52,9 +52,15 @@ template <typename K, typename V> std::ostream& operator<<(std::ostream& os, con
 
 template <typename K, typename V> std::ostream& operator<<(std::ostream& os, const std::map<K, V>& map)
 {
+    int index = 0;
+    os << "{";
     for (const auto& [key, value] : map) {
-        os << key << ": " << value << ", ";
+        index++;
+        os << key << ": " << value;
+        if (index != map.size())
+            os << ", ";
     }
+    os << "}";
     return os;
 }
 
