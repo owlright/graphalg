@@ -173,63 +173,54 @@ Graph takashami_tree(const Graph& g, vector<int> sources, int root)
     return tree;
 }
 
-vector<Graph> takashami_trees(const Graph& g, vector<int> sources, int root, const unordered_set<int>& forbiddens)
+vector<Graph> takashami_trees(const Graph& g, vector<int> sources, int root, const unordered_set<int>& forbiddens,
+    vector<map<int, vector<int>>>* equal_branch_nodes)
 {
-    vector<Graph> trees { takashami_tree(g, sources, root) };
-    vector<int> branchNodes;
+    vector<Graph> trees {};
 
-    auto t = trees.back();
-    auto branchTree = extract_branch_tree(t, sources, root, &branchNodes);
     std::unordered_set<Graph, Graph::Hash> visitedBranchTrees;
-    visitedBranchTrees.insert(branchTree);
-    unordered_set<int> visitedBranchNodes;
-    std::queue<int> waited;
-    for (auto& n : branchNodes) {
-        waited.push(n);
-    }
+    std::queue<Graph> waited;
+    waited.push(takashami_tree(g, sources, root));
+
     while (!waited.empty()) {
-        auto b = waited.front();
+        auto t = waited.front();
         waited.pop();
-        if (visitedBranchNodes.find(b) == visitedBranchNodes.end()) {
-            visitedBranchNodes.insert(b);
-            vector<int> equals = find_equal_nodes(g, branchTree, b, forbiddens);
-            auto gcopy = g;
-            gcopy.remove_node(b);
-            for (auto n : equals) {
-                gcopy.remove_node(n);
+        vector<int> branch_nodes;
+        auto branch_tree = extract_branch_tree(t, sources, root, &branch_nodes);
+        if (visitedBranchTrees.find(branch_tree) == visitedBranchTrees.end()) {
+            visitedBranchTrees.insert(branch_tree);
+            trees.push_back(t);
+            if (equal_branch_nodes) {
+                equal_branch_nodes->push_back(map<int, vector<int>>());
             }
-            try {
-                std::vector<int> newBranchNodes;
-                auto newt = takashami_tree(gcopy, sources, root);
-                auto newBranchTree = extract_branch_tree(newt, sources, root, &newBranchNodes);
-                if (visitedBranchTrees.find(newBranchTree) == visitedBranchTrees.end()) {
-                    trees.push_back(newt);
-                    visitedBranchTrees.insert(newBranchTree);
-                    branchNodes.insert(branchNodes.end(), newBranchNodes.begin(), newBranchNodes.end());
+            unordered_set<int> forbiddenmore(forbiddens.begin(), forbiddens.end());
+            for (auto& b : branch_nodes) {
+                forbiddenmore.insert(b);
+            }
+            for (auto& b : branch_nodes) {
+                vector<int> equals = find_equal_nodes(g, branch_tree, b, forbiddenmore);
+                if (equal_branch_nodes) {
+                    equal_branch_nodes->back()[b] = equals;
                 }
-            } catch (cRuntimeError& e) {
-                continue;
+                auto gcopy = g;
+                gcopy.remove_node(b);
+                for (auto n : equals) {
+                    gcopy.remove_node(n);
+                }
+                try {
+                    std::vector<int> newBranchNodes;
+                    auto newt = takashami_tree(gcopy, sources, root);
+                    auto newBranchTree = extract_branch_tree(newt, sources, root, &newBranchNodes);
+                    if (visitedBranchTrees.find(newBranchTree) == visitedBranchTrees.end()) {
+                        waited.push(newt);
+                    }
+                } catch (cRuntimeError& e) {
+                    continue;
+                }
             }
         }
     }
     return trees;
-}
-
-vector<Graph> takashami_trees_topK(const Graph& g, vector<int> sources, int root, const unordered_set<int>& forbiddens, int K)
-{
-    auto trees = takashami_trees(g, sources, root, forbiddens);
-    using dgPair = pair<double, Graph>;
-    priority_queue<dgPair, std::deque<dgPair>, CompareFirst<dgPair>> pq;
-    for (auto& t : trees) {
-        pq.push({ t.get_cost(), t });
-    }
-    vector<Graph> kTrees;
-    while (!pq.empty() && K) {
-        kTrees.push_back(pq.top().second);
-        pq.pop();
-        K--;
-    }
-    return kTrees;
 }
 
 vector<Graph> takashami_tree_K(const Graph& g, vector<int> sources, int root, int K)
@@ -316,6 +307,8 @@ vector<int> find_equal_nodes(
     const Graph& g, const Graph& tree, int node, const std::unordered_set<int>& forbiddens, double threshold)
 {
     vector<int> equal_nodes;
+    if (forbiddens.find(node) != forbiddens.end())
+        return equal_nodes;
     std::vector<int> children;
     auto dist = g.get_dist();
     int parent = tree.out_neighbors(node).at(0).first;
