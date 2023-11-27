@@ -16,6 +16,31 @@ public:
     vector<int> bfs(int root, bool directionOut = true) const;
     bool is_tree() const;
 
+    bool operator==(const Graph& other) const { // ! TODO too simple
+        // Compare the adjacency lists
+        if (adjout.size() != other.adjout.size())
+            return false;
+        for (const auto& [src, vw1]:adjout) {
+            auto it = other.adjout.find(src);
+            if (it == other.adjout.end()) {
+                return false;
+            }
+            auto& vw2 = it->second;
+            if (vw1.size() != vw2.size()) {
+                return false;
+            }
+            std::unordered_set<int> s1;
+            std::unordered_set<int> s2;
+            for (auto i = 0; i < vw1.size(); i++) {
+                s1.insert(vw1[i].first);
+                s2.insert(vw2[i].first);
+            }
+            if (s1 != s2) {
+                return false;
+            }
+        }
+        return true;
+    }
 public:
     void add_edge(int src, int dest, double weight = 1.0, bool bidirectional = false);
     void set_weight(int src, int dest, double weight = 1.0);
