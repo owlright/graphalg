@@ -4,20 +4,6 @@
 #include <cmath>
 #include <stack>
 namespace graphalg::algorithms {
-bool operator==(const std::vector<int>& vec1, const std::vector<int>& vec2)
-{
-    if (vec1.size() != vec2.size()) {
-        return false; // Vectors have different sizes, they are not equal
-    }
-
-    for (size_t i = 0; i < vec1.size(); i++) {
-        if (vec1[i] != vec2[i]) {
-            return false; // Found a mismatching element, vectors are not equal
-        }
-    }
-
-    return true; // All elements are equal, vectors are equal
-}
 
 void floyd_warshall(double** distance, int n)
 {
