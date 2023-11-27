@@ -41,6 +41,18 @@ public:
         }
         return true;
     }
+
+    // 实现哈希函数
+    struct Hash {
+        size_t operator()(const Graph& graph) const {
+            size_t hash = 0;
+            for (const auto& node : graph.nodes) {
+                // 基于键和值的哈希值计算
+                hash ^= std::hash<int>()(node);
+            }
+            return hash;
+        }
+    };
 public:
     void add_edge(int src, int dest, double weight = 1.0, bool bidirectional = false);
     void set_weight(int src, int dest, double weight = 1.0);
