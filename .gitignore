@@ -34,3 +34,4 @@ obj/
 /app
 *.out
 /app_dbg
+**.out.**

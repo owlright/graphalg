@@ -1,9 +1,11 @@
 #include "algorithms/algorithms.h"
-#include "graph/graph.h"
 #include "common/print.h"
+#include "graph/graph.h"
 #include <algorithm>
 #include <iostream>
+#include <iterator>
 #include <random>
+#include <set>
 #include <unordered_set>
 using namespace graphalg;
 using namespace graphalg::algorithms;
@@ -24,15 +26,15 @@ int main()
     }
     auto now = 2343;
     std::shuffle(hosts.begin(), hosts.end(), std::default_random_engine(now));
-    decltype(hosts) senders(hosts.begin(), hosts.begin() + 20);
+    decltype(hosts) senders(hosts.begin(), hosts.begin() + 64);
     unordered_set<int> forbiddens(hosts.begin(), hosts.end());
-    auto root = hosts[21];
-    auto trees = takashami_tree_K(g, senders, root, 20);
+    auto root = hosts[senders.size() + 1];
+    auto trees = takashami_trees_topK(g, senders, root, unordered_set<int>(hosts.begin(), hosts.end()), 5);
 
     for (auto i = 0; i < trees.size(); i++) {
         vector<int> branch_nodes;
         auto t = extract_branch_tree(trees[i], senders, root, &branch_nodes);
         // trees[i].draw((std::string("tree") + std::to_string(i)).c_str());
-        cout << cost(trees[i]) << endl;
+        cout << trees[i].is_tree() << " " << trees[i].get_cost() << " " << trees[i].dfs(root, false) << endl;
     }
 }
