@@ -63,15 +63,15 @@ void Graph::read_dot(const char* filename)
 vector<int> Graph::dfs(int root, bool directionOut) const
 {
     ASSERT(has_node(root));
-    vector<int> result {root};
+    vector<int> result { root };
     stack<int> st;
     st.push(root);
-    unordered_set<int> visited {root};
+    unordered_set<int> visited { root };
     auto& adj = directionOut ? adjout : adjin;
     while (!st.empty()) {
         auto u = st.top();
         st.pop();
-        if (visited.find(u)== visited.end()) {
+        if (visited.find(u) == visited.end()) {
             visited.insert(u);
             result.push_back(u);
         }
@@ -86,10 +86,10 @@ vector<int> Graph::dfs(int root, bool directionOut) const
 vector<int> Graph::bfs(int root, bool directionOut) const
 {
     ASSERT(has_node(root));
-    vector<int> result {root};
+    vector<int> result { root };
     queue<int> que;
     que.push(root);
-    unordered_set<int> visited {root};
+    unordered_set<int> visited { root };
     auto& adj = directionOut ? adjout : adjin;
     while (!que.empty()) {
         auto u = que.front();
@@ -106,6 +106,15 @@ vector<int> Graph::bfs(int root, bool directionOut) const
     return result;
 }
 
+bool Graph::is_tree() const
+{
+    for (auto& n : nodes) {
+        if (outdegree(n) != 1 || outdegree(n) != 0) {
+            return false;
+        }
+    }
+    return true;
+}
 
 // Add edges
 void Graph::add_edge(int src, int dest, double weight, bool bidirectional)
@@ -235,10 +244,7 @@ void Graph::update_dist()
     floyd_warshall(dist, n);
 }
 
-double** Graph::get_dist() const
-{
-    return dist;
-}
+double** Graph::get_dist() const { return dist; }
 
 double Graph::distance(int src, int dest) const
 {
@@ -347,7 +353,6 @@ Graph::Graph(const Graph& other)
             memcpy(dist[i], other.dist[i], n * sizeof(double));
         }
     }
-
 }
 // move constructor
 Graph::Graph(Graph&& other)
