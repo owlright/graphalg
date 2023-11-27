@@ -1,17 +1,21 @@
 #pragma once
 #include "../common/utils.h"
 #include <map>
+#include <queue>
+#include <unordered_set>
+
 namespace graphalg {
 using std::map;
 using std::pair;
+using Edge = pair<int, int>;
+using EdgeWeight = pair<int, double>;
 class Graph {
 public:
-    using Edge = pair<int, int>;
-    using EdgeWeight = pair<int, double>;
 
 public:
     void read_dot(const char* filename);
     vector<int> dfs(int root, bool directionOut = true) const;
+    vector<int> bfs(int root, bool directionOut = true) const;
 
 public:
     void add_edge(int src, int dest, double weight = 1.0, bool bidirectional = false);
