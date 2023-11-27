@@ -34,7 +34,8 @@ namespace algorithms {
     void floyd_warshall(double** distance, int n);
     double dijistra(const Graph& g, int src, int dest, vector<int>* path = nullptr);
     Graph takashami_tree(const Graph& g, vector<int> sources, int root);
-    vector<Graph> takashami_tree_K(const Graph& g, vector<int> sources, int root, int K = 1);
+    vector<Graph> takashami_trees(const Graph& g, vector<int> sources, int root, const unordered_set<int>& forbiddens = unordered_set<int>());
+    vector<Graph> takashami_trees_topK(const Graph& g, vector<int> sources, int root, const unordered_set<int>& forbiddens = unordered_set<int>(), int K = 1);
     Graph extract_branch_tree(
         const Graph& tree, const vector<int>& sources, int root, vector<int>* branch_nodes = nullptr);
     vector<double> yenksp(Graph& g, int src, int dest, int K, vector<Path>& A);
