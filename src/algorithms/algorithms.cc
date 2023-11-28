@@ -198,7 +198,7 @@ vector<Graph> takashami_trees(const Graph& g, vector<int> sources, int root, con
     std::unordered_set<Graph, Graph::Hash> visitedBranchTrees;
     std::queue<Graph> waited;
     waited.push(takashami_tree(g, sources, root));
-
+    ASSERT(g.is_connected());
     while (!waited.empty()) {
         auto t = waited.front();
         waited.pop();
@@ -219,19 +219,20 @@ vector<Graph> takashami_trees(const Graph& g, vector<int> sources, int root, con
                 if (equal_branch_nodes) {
                     equal_branch_nodes->back()[b] = equals;
                 }
+
                 auto gcopy = g;
                 gcopy.remove_node(b);
                 for (auto n : equals) {
                     gcopy.remove_node(n);
                 }
-                try {
+                if (gcopy.is_connected()) {
                     std::vector<int> newBranchNodes;
                     auto newt = takashami_tree(gcopy, sources, root);
                     auto newBranchTree = extract_branch_tree(newt, sources, root, &newBranchNodes);
                     if (visitedBranchTrees.find(newBranchTree) == visitedBranchTrees.end()) {
                         waited.push(newt);
                     }
-                } catch (cRuntimeError& e) {
+                } else {
                     continue;
                 }
             }
