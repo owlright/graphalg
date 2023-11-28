@@ -116,6 +116,15 @@ bool Graph::is_tree() const
     return true;
 }
 
+bool Graph::is_connected() const
+{
+    auto node = nodes[0];
+    auto visited = dfs(node);
+    if (visited.size() != nodes.size())
+        return false;
+    return true;
+}
+
 // Add edges
 void Graph::add_edge(int src, int dest, double weight, bool bidirectional)
 {
@@ -413,6 +422,5 @@ Graph& Graph::operator=(Graph&& other)
     }
     return *this;
 }
-
 
 }
