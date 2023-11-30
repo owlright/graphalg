@@ -67,16 +67,15 @@ public:
     bool has_edge(const int& src, const int& dest) const;
     bool has_edge(const Edge&) const;
 
-    void init_weight_matrix();
     void update_dist();
-    double distance(int src, int dest, bool usedDist = true) const;
+    double distance(int src, int dest) const;
     double weight(int src, int dst) const;
     int get_vertices_number() const { return adjout.size(); }
     int get_max_vertice() const { return max_vertice; }
 
 public:
     const vector<int>& get_nodes() const { return nodes; }
-    double** get_dist() const;
+
     const vector<EdgeWeight>& out_neighbors(int src) const
     {
         if (adjout.find(src) != adjout.end()) {
@@ -106,6 +105,10 @@ private:
     map<int, vector<EdgeWeight>> adjout;
     map<int, vector<EdgeWeight>> adjin;
     vector<EdgeWeight> emptyEdge;
+
+private:
+    void init_weight_matrix();
+    void reset_dist();
 
 public:
     explicit Graph();

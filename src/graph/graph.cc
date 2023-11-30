@@ -248,7 +248,24 @@ void Graph::init_weight_matrix()
     for (int i = 0; i < n; i++) {
         dist[i] = (double*)malloc(n * sizeof(double));
     }
+}
+
+void Graph::update_dist()
+{
+    if (dist)
+        reset_dist();
+    else {
+        init_weight_matrix();
+        reset_dist();
+    }
+    int n = get_max_vertice() + 1;
     ASSERT(dist);
+    floyd_warshall(dist, n);
+}
+
+void Graph::reset_dist() {
+    ASSERT(dist);
+    int n = get_max_vertice() + 1;
     for (int i = 0; i < n; i++) {
         for (int j = 0; j < n; j++) {
             dist[i][j] = INFINITY;
@@ -263,17 +280,7 @@ void Graph::init_weight_matrix()
     }
 }
 
-void Graph::update_dist()
-{
-    init_weight_matrix();
-    int n = get_max_vertice() + 1;
-    ASSERT(dist);
-    floyd_warshall(dist, n);
-}
-
-double** Graph::get_dist() const { return dist; }
-
-double Graph::distance(int src, int dest, bool useDist) const
+double Graph::distance(int src, int dest) const
 {
     if (dist) {
         return dist[src][dest];
@@ -386,7 +393,7 @@ Graph::Graph(const Graph& other)
     adjin = other.adjin;
     adjout = other.adjout;
 
-    if (other.get_dist()) {
+    if (other.dist) {
         int n = other.get_max_vertice() + 1;
         dist = (double**)malloc(n * sizeof(double*));
         for (int i = 0; i < n; i++) {

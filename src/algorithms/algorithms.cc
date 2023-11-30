@@ -36,7 +36,7 @@ double dijistra(const Graph& g, int src, int dest, vector<int>* path)
     bool found = false;
     unordered_set<int> visited { src };
     while (!pq.empty()) {
-        auto u = pq.top().second;
+        auto u = pq.top().second; // ! do not use auto& here, after pq.pop(), get u's value is undefined behaviour
         pq.pop();
         for (auto& [v, weight] : g.out_neighbors(u)) {
             // If there is shorted path to v through u.
@@ -198,8 +198,8 @@ vector<Graph> takashami_trees(const Graph& g, vector<int> sources, int root, con
 
     std::unordered_set<Graph, Graph::Hash> visitedBranchTrees;
     std::queue<Graph> waited;
-    waited.push(takashami_tree(g, sources, root));
     ASSERT(g.is_connected());
+    waited.push(takashami_tree(g, sources, root));
     while (!waited.empty()) {
         auto t = waited.front();
         waited.pop();
@@ -227,6 +227,7 @@ vector<Graph> takashami_trees(const Graph& g, vector<int> sources, int root, con
                     gcopy.remove_node(n);
                 }
                 if (gcopy.is_connected()) {
+                    gcopy.update_dist();
                     std::vector<int> newBranchNodes;
                     auto newt = takashami_tree(gcopy, sources, root);
                     auto newBranchTree = extract_branch_tree(newt, sources, root, &newBranchNodes);
@@ -301,7 +302,7 @@ Graph extract_branch_tree(const Graph& tree, const vector<int>& sources, int roo
         int edge_start = s;
         while (node != root) {
             if (visited.find(node) != visited.end()) {
-                t.add_edge(edge_start, node, tree.distance(edge_start, node, false));
+                t.add_edge(edge_start, node, tree.distance(edge_start, node));
                 break;
             } else {
                 visited.insert(node);
@@ -310,13 +311,13 @@ Graph extract_branch_tree(const Graph& tree, const vector<int>& sources, int roo
                 if (branch_nodes) {
                     branch_nodes->push_back(node);
                 }
-                t.add_edge(edge_start, node, tree.distance(edge_start, node, false));
+                t.add_edge(edge_start, node, tree.distance(edge_start, node));
                 edge_start = node;
             }
             node = tree.out_neighbors(node).at(0).first;
         }
         if (node == root) {
-            t.add_edge(edge_start, node, tree.distance(edge_start, node, false));
+            t.add_edge(edge_start, node, tree.distance(edge_start, node));
         }
     }
     return t;
