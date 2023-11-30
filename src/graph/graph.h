@@ -17,11 +17,12 @@ public:
     bool is_tree() const;
     bool is_connected() const;
 
-    bool operator==(const Graph& other) const { // ! TODO too simple
+    bool operator==(const Graph& other) const
+    { // ! weights are not considered here
         // Compare the adjacency lists
         if (adjout.size() != other.adjout.size())
             return false;
-        for (const auto& [src, vw1]:adjout) {
+        for (const auto& [src, vw1] : adjout) {
             auto it = other.adjout.find(src);
             if (it == other.adjout.end()) {
                 return false;
@@ -45,7 +46,8 @@ public:
 
     // 实现哈希函数
     struct Hash {
-        size_t operator()(const Graph& graph) const {
+        size_t operator()(const Graph& graph) const
+        {
             size_t hash = 0;
             for (const auto& node : graph.nodes) {
                 // 基于键和值的哈希值计算
@@ -54,6 +56,7 @@ public:
             return hash;
         }
     };
+
 public:
     void add_edge(int src, int dest, double weight = 1.0, bool bidirectional = false);
     void set_weight(int src, int dest, double weight = 1.0);
@@ -64,8 +67,9 @@ public:
     bool has_edge(const int& src, const int& dest) const;
     bool has_edge(const Edge&) const;
 
+    void init_weight_matrix();
     void update_dist();
-    double distance(int src, int dest) const;
+    double distance(int src, int dest, bool usedDist = true) const;
     double weight(int src, int dst) const;
     int get_vertices_number() const { return adjout.size(); }
     int get_max_vertice() const { return max_vertice; }

@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <cmath>
 #include <stack>
+#include <set>
 namespace graphalg::algorithms {
 
 void floyd_warshall(double** distance, int n)
@@ -22,7 +23,7 @@ void floyd_warshall(double** distance, int n)
 double dijistra(const Graph& g, int src, int dest, vector<int>* path)
 {
     int n = g.get_max_vertice() + 1;
-    priority_queue<diPair, std::deque<diPair>, CompareFirst<diPair>> pq;
+    priority_queue<diPair, std::vector<diPair>, CompareFirst<diPair>> pq;
     vector<double> dist(n, INFINITY);
     vector<int> prev(n, -1);
     pq.push(make_pair(0.0, src));
@@ -300,7 +301,7 @@ Graph extract_branch_tree(const Graph& tree, const vector<int>& sources, int roo
         int edge_start = s;
         while (node != root) {
             if (visited.find(node) != visited.end()) {
-                t.add_edge(edge_start, node, tree.distance(edge_start, node));
+                t.add_edge(edge_start, node, tree.distance(edge_start, node, false));
                 break;
             } else {
                 visited.insert(node);
@@ -309,13 +310,13 @@ Graph extract_branch_tree(const Graph& tree, const vector<int>& sources, int roo
                 if (branch_nodes) {
                     branch_nodes->push_back(node);
                 }
-                t.add_edge(edge_start, node, tree.distance(edge_start, node));
+                t.add_edge(edge_start, node, tree.distance(edge_start, node, false));
                 edge_start = node;
             }
             node = tree.out_neighbors(node).at(0).first;
         }
         if (node == root) {
-            t.add_edge(edge_start, node, tree.distance(edge_start, node));
+            t.add_edge(edge_start, node, tree.distance(edge_start, node, false));
         }
     }
     return t;

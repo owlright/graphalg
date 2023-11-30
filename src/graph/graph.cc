@@ -239,13 +239,16 @@ bool Graph::has_edge(const Edge& e) const
     return has_edge(src, dest);
 }
 
-void Graph::update_dist()
+void Graph::init_weight_matrix()
 {
+    if (dist)
+        throw cRuntimeError("can't init dist twice!");
     int n = get_max_vertice() + 1;
     dist = (double**)malloc(n * sizeof(double*));
     for (int i = 0; i < n; i++) {
         dist[i] = (double*)malloc(n * sizeof(double));
     }
+    ASSERT(dist);
     for (int i = 0; i < n; i++) {
         for (int j = 0; j < n; j++) {
             dist[i][j] = INFINITY;
@@ -258,12 +261,19 @@ void Graph::update_dist()
             dist[u][v] = w;
         }
     }
+}
+
+void Graph::update_dist()
+{
+    init_weight_matrix();
+    int n = get_max_vertice() + 1;
+    ASSERT(dist);
     floyd_warshall(dist, n);
 }
 
 double** Graph::get_dist() const { return dist; }
 
-double Graph::distance(int src, int dest) const
+double Graph::distance(int src, int dest, bool useDist) const
 {
     if (dist) {
         return dist[src][dest];
@@ -276,6 +286,9 @@ double Graph::weight(int src, int dst) const
 {
     ASSERT(adjout.find(src) != adjout.end());
     ASSERT(has_edge(src, dst));
+    if (dist) {
+        return dist[src][dst];
+    }
     auto& vws = adjout.at(src);
     for (auto& [v, w] : vws) {
         if (v == dst)
