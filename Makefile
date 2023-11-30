@@ -4,7 +4,7 @@
 
 # Compiler settings - Can be customized.
 CC = g++
-CXXFLAGS = -std=c++17 -Wall -Wno-write-strings  -Wno-sign-compare
+CXXFLAGS = -std=c++17 -Wall -Wno-write-strings  -Wno-sign-compare -Wno-stringop-truncation
 LDFLAGS = -lgvc -lcgraph -lcdt
 DBGCXXFLAGS = $(CXXFLAGS) -g3 -O0 -DDEBUG
 # Makefile settings - Can be customized.
@@ -51,12 +51,12 @@ $(APPNAME): $(OBJ) main.cc
 # $(info CREATED $(APPNAME))
 
 $(LIBNAME): $(OBJ)
-	$(CC) $(CXXFLAGS) -shared -o $@ $^ $(LDFLAGS)
+	$(CC) $(CXXFLAGS) -O3 -shared -o $@ $^ $(LDFLAGS)
 
 # Building rule for .o files and its .c/.cpp in combination with all .h
 $(OBJDIR)/%.o: $(SRCDIR)/%$(EXT) $(INC)
 	@mkdir -p $(@D)
-	$(CC) $(CXXFLAGS) -fPIC -o $@ -c $<
+	$(CC) $(CXXFLAGS) -O3 -fPIC -o $@ -c $<
 
 $(OBJDIR)/%_dbg.o: $(SRCDIR)/%$(EXT) $(INC)
 	@mkdir -p $(@D)
