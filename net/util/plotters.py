@@ -25,7 +25,7 @@ rcParams["font.sans-serif"] = [
     "Lucida Grande",
     "Verdana",
 ]
-
+rcParams["mathtext.fontset"] = "stix"
 
 def draw_curved_edge_labels(
     G,
@@ -156,9 +156,7 @@ def draw_curved_edge_labels(
                 angle += 180
             # transform data coordinate angle to screen coordinate angle
             xy = np.array((x, y))
-            trans_angle = ax.transData.transform_angles(
-                np.array((angle,)), xy.reshape((1, 2))
-            )[0]
+            trans_angle = ax.transData.transform_angles(np.array((angle,)), xy.reshape((1, 2)))[0]
         else:
             trans_angle = 0.0
         # use default box of white with white border
@@ -242,9 +240,7 @@ def draw_flow_paths(G, P, ax=None):
                 ax=ax,
             )
     nodes_type = nx.get_node_attributes(G, "type")
-    nx.draw_networkx_labels(
-        G, pos, labels={n: n for n in G}, font_size=10, ax=ax  # resort to node's index
-    )
+    nx.draw_networkx_labels(G, pos, labels={n: n for n in G}, font_size=10, ax=ax)  # resort to node's index
     if nodes_type:
         hosts = [n for n, v in nodes_type.items() if v == "host"]
         switches = [n for n, v in nodes_type.items() if v == "switch"]
@@ -278,19 +274,21 @@ def plot(
     edge_label_name=None,
     exclude_nodes=[],
     exclude_edges=[],
-    node_style=dict(
-        node_shape="s", node_size=150, node_color="w", edgecolors="k", linewidths=1
-    ),
-    edge_style=dict(),
     pos=None,
     ax=None,
+    **kwds,
 ):
+    node_style = dict(node_shape="s", node_size=150, node_color="w", edgecolors="k", linewidths=.5)
+    edge_style = dict()
+    if "node_shape" in kwds:
+        node_style["node_shape"] = kwds["node_shape"]
+    if "node_size" in kwds:
+        node_style["node_size"] = kwds["node_size"]
     if not ax:
         ax = plt.gca()  # default is gca()
 
     if isDebug:  # * this is very helpful when you use plot() in debug,
         ax.cla()  # * it will not draw on the same figure
-
     if not pos:
         pos = nx.get_node_attributes(G, "pos")
         if not pos:
@@ -324,9 +322,10 @@ def plot(
         pos,
         labels=nx.get_node_attributes(G, node_label_name)
         if node_label_name
-        else {n: n for n in G},  # resort to node's index
-        font_size=10,
+        else {n: r'${}$'.format(n) for n in G},  # resort to node's index
+        font_size=7,
         ax=ax,
+        verticalalignment="center_baseline"
     )
     all_edges = list(G.edges())
     edge_labels = nx.get_edge_attributes(G, edge_label_name)
@@ -339,8 +338,8 @@ def plot(
             G,
             pos,
             arrowstyle=arrow_style,
-            arrowsize=10,
-            width=1,
+            arrowsize=7,
+            width=.5,
             edgelist=[e for e in curved_edges if e not in exclude_edges],
             connectionstyle="arc3, rad = 0.1",
             ax=ax,
@@ -350,8 +349,8 @@ def plot(
             pos,
             arrowstyle=arrow_style,
             edgelist=[e for e in straight_edges if e not in exclude_edges],
-            arrowsize=10,
-            width=1,
+            arrowsize=7,
+            width=.5,
             ax=ax,
         )
     else:
@@ -371,9 +370,7 @@ def plot(
         curved_edge_labels = {edge: edge_labels[edge] for edge in curved_edges}
         straight_edge_labels = {edge: edge_labels[edge] for edge in straight_edges}
         if curved_edge_labels:
-            draw_curved_edge_labels(
-                G, ax=ax, pos=pos, edge_labels=curved_edge_labels, rotate=False, rad=0.1
-            )
+            draw_curved_edge_labels(G, ax=ax, pos=pos, edge_labels=curved_edge_labels, rotate=False, rad=0.1)
         if straight_edge_labels:
             nx.draw_networkx_edge_labels(
                 G,
@@ -427,12 +424,8 @@ def highlight(
 
     hl_nodes = list(sol.nodes())
     hl_edges = list(sol.edges())
-    plot(
-        g, exclude_edges=hl_edges, exclude_nodes=hl_nodes, pos=pos
-    )  # plot original nodes and edges
-    nx.draw_networkx_nodes(
-        g, pos, ax=ax, nodelist=hl_nodes, **node_style
-    )  # highlight the solution nodes
+    plot(g, exclude_edges=hl_edges, exclude_nodes=hl_nodes, pos=pos)  # plot original nodes and edges
+    nx.draw_networkx_nodes(g, pos, ax=ax, nodelist=hl_nodes, **node_style)  # highlight the solution nodes
     if sol.is_directed():
         curved_edges = [e for e in sol.edges() if reversed(e) in hl_edges]
         straight_edges = list(set(sol.edges()) - set(curved_edges))
@@ -444,11 +437,9 @@ def highlight(
             **line_style,
             connectionstyle="arc3, rad = 0.1",
         )
-        nx.draw_networkx_edges(
-            sol, pos=pos, ax=ax, edgelist=straight_edges, **line_style
-        )
+        nx.draw_networkx_edges(sol, pos=pos, ax=ax, edgelist=straight_edges, **line_style)
     else:
-        del line_style['arrows']
-        del line_style['arrowsize']
-        del line_style['arrowstyle']
+        del line_style["arrows"]
+        del line_style["arrowsize"]
+        del line_style["arrowstyle"]
         nx.draw_networkx_edges(sol, pos=pos, ax=ax, edgelist=sol.edges, **line_style)
