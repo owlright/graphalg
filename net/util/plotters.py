@@ -25,7 +25,7 @@ rcParams["font.sans-serif"] = [
     "Lucida Grande",
     "Verdana",
 ]
-rcParams["mathtext.fontset"] = "stix"
+# rcParams["mathtext.fontset"] = "stix"
 
 def draw_curved_edge_labels(
     G,
@@ -323,7 +323,7 @@ def plot(
         labels=nx.get_node_attributes(G, node_label_name)
         if node_label_name
         else {n: r'${}$'.format(n) for n in G},  # resort to node's index
-        font_size=7,
+        font_size=9,
         ax=ax,
         verticalalignment="center_baseline"
     )

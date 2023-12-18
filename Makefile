@@ -1,94 +1,57 @@
-########################################################################
-####################### Makefile Template ##############################
-########################################################################
-
 # Compiler settings - Can be customized.
 CC = g++
 CXXFLAGS = -std=c++17 -Wall -Wno-write-strings  -Wno-sign-compare -Wno-stringop-truncation
 LDFLAGS = -lgvc -lcgraph -lcdt
 DBGCXXFLAGS = $(CXXFLAGS) -g3 -O0 -DDEBUG
 # Makefile settings - Can be customized.
-APPNAME = app
-LIBNAME = libgraph.so
-DBGLIBNAME = libgraph_dbg.so
+LIBNAME = graph
+DBGLIBNAME = $(LIBNAME)_dbg
 EXT = .cc
-SRCDIR = src
-OBJDIR = obj
+LIBSRCDIR = src
+LIBOBJDIR = obj
 
-############## Do not change anything from here downwards! #############
-SRC := $(shell find $(SRCDIR) -type f -name '*$(EXT)')
-INC := $(shell find $(SRCDIR) -type f -name '*.h')
-OBJ := $(SRC:$(SRCDIR)/%$(EXT)=$(OBJDIR)/%.o)
-DEP := $(SRC:$(SRCDIR)/%$(EXT)=$(OBJDIR)/%.d)
-DBGOBJ := $(SRC:$(SRCDIR)/%$(EXT)=$(OBJDIR)/%_dbg.o)
-# OBJ := $(patsubst $(SRCDIR)/%.cc,$(OBJDIR)/%.o,$(SRC))
-# DEP := $(patsubst $(SRCDIR)/%.cc,$(OBJDIR)/%.d,$(SRC))
-# UNIX-based OS variables & settings
-RM = rm -f
-DELOBJ = $(OBJ)
-# Windows OS variables & settings
-DEL = del
-EXE = .exe
-WDELOBJ = $(SRC:$(SRCDIR)/%$(EXT)=$(OBJDIR)\\%.o)
+all:
+	@echo "Must name a target!"
+############# execute ##############
+SRCS := $(wildcard *.cc)
+EXES := $(patsubst %.cc, %, $(SRCS))
 
-########################################################################
-####################### Targets beginning here #########################
-########################################################################
+%: %$(EXT) $(LIBNAME)
+	$(CC) $(CXXFLAGS) -o $@ -I$(LIBSRCDIR) $< -L. -l$(LIBNAME)
 
-all: $(APPNAME) $(LIBNAME)
+############# library ##############
+LIBSRC := $(shell find $(LIBSRCDIR) -type f -name '*$(EXT)')
+LIBINC := $(shell find $(LIBSRCDIR) -type f -name '*.h')
+LIBOBJ := $(LIBSRC:$(LIBSRCDIR)/%$(EXT)=$(LIBOBJDIR)/%.o)
+LIBDEP := $(LIBSRC:$(LIBSRCDIR)/%$(EXT)=$(LIBOBJDIR)/%.d)
+DBGLIBOBJ := $(LIBSRC:$(LIBSRCDIR)/%$(EXT)=$(LIBOBJDIR)/%_dbg.o)
+DEP := $(patsubst $(LIBSRCDIR)/%.cc,$(LIBOBJDIR)/%.d,$(LIBSRC))
 
-debug: $(APPNAME)_dbg $(DBGLIBNAME)
+$(LIBNAME): $(LIBOBJ)
+	$(CC) $(CXXFLAGS) -O3 -shared -o lib$@.so $^ $(LDFLAGS)
 
-$(APPNAME)_dbg: $(DBGOBJ) main.cc
-	$(CC) $(DBGCXXFLAGS) -o $@ -I$(SRCDIR) $^ $(LDFLAGS)
+$(LIBOBJDIR)/%.d: $(LIBSRCDIR)/%$(EXT)
+	@mkdir -p $(@D)
+	@$(CC) $(CXXFLAGS) $< -MM -MT $(@:%.d=$(LIBOBJDIR)/%.o) >$@
 
-$(DBGLIBNAME): $(DBGOBJ)
-	$(CC) $(DBGCXXFLAGS) -shared -o $@ $^ $(LDFLAGS)
+########### objects #######################
+-include $(DEP)
 
-# Builds the app
-$(APPNAME): $(OBJ) main.cc
-	$(CC) $(CXXFLAGS) -o $@ -I$(SRCDIR) $^ $(LDFLAGS)
-# $(info CREATED $(APPNAME))
-
-$(LIBNAME): $(OBJ)
-	$(CC) $(CXXFLAGS) -O3 -shared -o $@ $^ $(LDFLAGS)
-
-# Building rule for .o files and its .c/.cpp in combination with all .h
-$(OBJDIR)/%.o: $(SRCDIR)/%$(EXT) $(INC)
+$(LIBOBJDIR)/%.o: $(LIBSRCDIR)/%$(EXT) $(LIBINC)
 	@mkdir -p $(@D)
 	$(CC) $(CXXFLAGS) -O3 -fPIC -o $@ -c $<
 
-$(OBJDIR)/%_dbg.o: $(SRCDIR)/%$(EXT) $(INC)
-	@mkdir -p $(@D)
-	$(CC) $(DBGCXXFLAGS) -fPIC -o $@ -c $<
-
-# Creates the dependecy rules
-$(OBJDIR)/%.d: $(SRCDIR)/%$(EXT)
-	@$(CPP) $(CFLAGS) $< -MM -MT $(@:%.d=$(OBJDIR)/%.o) >$@
-
-# Includes all .h files
-# -include $(DEP)
-
-
+# UNIX-based OS variables & settings
+RM = rm -f
+DELOBJ = $(LIBOBJ)
 
 ################### Cleaning rules for Unix-based OS ###################
 # Cleans complete project
 .PHONY: clean
 clean:
-	$(RM) $(DELOBJ) $(DBGOBJ) $(DEP) $(APPNAME) $(APPNAME)_dbg $(LIBNAME) $(DBGLIBNAME)
+	$(RM) $(DELOBJ) $(DBGOBJ) $(DEP) lib$(LIBNAME).so lib$(DBGLIBNAME).so $(EXES)
 
 # Cleans only all files with the extension .d
 .PHONY: cleandep
 cleandep:
 	$(RM) $(DEP)
-
-#################### Cleaning rules for Windows OS #####################
-# Cleans complete project
-.PHONY: cleanw
-cleanw:
-	$(DEL) $(WDELOBJ) $(DEP) $(APPNAME)$(EXE)
-
-# Cleans only all files with the extension .d
-.PHONY: cleandepw
-cleandepw:
-	$(DEL) $(DEP)
