@@ -8,7 +8,7 @@ namespace graphalg {
 using namespace graphalg::algorithms;
 using std::queue;
 using std::stack;
-bool is_in_vector(const int& x, const vector<int> vec)
+bool is_in_vector(const Node& x, const vector<Node> vec)
 {
     for (auto& i : vec) {
         if (i == x) {
@@ -40,18 +40,18 @@ void Graph::read_dot(const char* filename)
 
     // 遍历节点
     for (node = agfstnode(graph); node; node = agnxtnode(graph, node)) {
-        int u = atoi(agnameof(node));
+        auto u = atoi(agnameof(node));
 
         // 遍历节点的出边
         for (edge = agfstout(graph, node); edge; edge = agnxtout(graph, edge)) {
-            int v = atoi(agnameof(aghead(edge)));
+            auto v = atoi(agnameof(aghead(edge)));
             if (u != v)
                 add_edge(u, v);
         }
 
         // 遍历节点的入边
         for (edge = agfstin(graph, node); edge; edge = agnxtin(graph, edge)) {
-            int v = atoi(agnameof(aghead(edge)));
+            auto v = atoi(agnameof(aghead(edge)));
             if (u != v)
                 add_edge(v, u);
         }
@@ -60,11 +60,11 @@ void Graph::read_dot(const char* filename)
     agclose(graph);
 }
 
-vector<int> Graph::dfs(int root, bool directionOut) const
+vector<Node> Graph::dfs(Node root, bool directionOut) const
 {
-    ASSERT(has_node(root));
-    vector<int> result { root };
-    stack<int> st;
+    ASSERT(has_node(Node));
+    vector<Node> result { root };
+    stack<Node> st;
     st.push(root);
     unordered_set<int> visited { root };
     auto& adj = directionOut ? adjout : adjin;
@@ -83,13 +83,13 @@ vector<int> Graph::dfs(int root, bool directionOut) const
     return result;
 }
 
-vector<int> Graph::bfs(int root, bool directionOut) const
+vector<Node> Graph::bfs(Node root, bool directionOut) const
 {
     ASSERT(has_node(root));
-    vector<int> result { root };
-    queue<int> que;
+    vector<Node> result { root };
+    queue<Node> que;
     que.push(root);
-    unordered_set<int> visited { root };
+    unordered_set<Node> visited { root };
     auto& adj = directionOut ? adjout : adjin;
     while (!que.empty()) {
         auto u = que.front();
@@ -126,7 +126,7 @@ bool Graph::is_connected() const
 }
 
 // Add edges
-void Graph::add_edge(int src, int dest, double weight, bool bidirectional)
+void Graph::add_edge(Node src, Node dest, double weight, bool bidirectional)
 {
     add_node(src);
     add_node(dest);
@@ -142,7 +142,7 @@ void Graph::add_edge(int src, int dest, double weight, bool bidirectional)
     }
 }
 
-void Graph::set_weight(int src, int dest, double weight)
+void Graph::set_weight(Node src, Node dest, double weight)
 {
     ASSERT(has_edge(src, dest));
     ASSERT(adjout.find(src) != adjout.end());
@@ -161,12 +161,12 @@ void Graph::set_weight(int src, int dest, double weight)
     }
 }
 
-void Graph::remove_edge(int src, int dest)
+void Graph::remove_edge(Node src, Node dest)
 {
     ASSERT(adjin.find(dest) != adjin.end());
     ASSERT(adjout.find(src) != adjout.end());
     if (has_edge(src, dest)) {
-        auto remove_adj = [](vector<EdgeWeight>& vw, const int& node) {
+        auto remove_adj = [](vector<EdgeWeight>& vw, const Node& node) {
             int index = 0;
             for (auto& [v, w] : vw) {
                 if (v == node) {
@@ -181,7 +181,7 @@ void Graph::remove_edge(int src, int dest)
     }
 }
 
-void Graph::add_node(int n)
+void Graph::add_node(Node n)
 {
     if (!has_node(n)) {
         if (n > max_vertice)
@@ -192,7 +192,7 @@ void Graph::add_node(int n)
     }
 }
 
-void Graph::remove_node(int n)
+void Graph::remove_node(Node n)
 {
     // ! delete a node also delete all its edges
     if (has_node(n)) {
@@ -210,14 +210,14 @@ void Graph::remove_node(int n)
             vector<EdgeWeight>& neighbors = entry.second;
 
             neighbors.erase(remove_if(neighbors.begin(), neighbors.end(),
-                                [n](const pair<int, double>& edge) { return edge.first == n; }),
+                                [n](const Edge& edge) { return edge.first == n; }),
                 neighbors.end());
         }
     }
 }
-bool Graph::has_node(int n) const { return is_in_vector(n, nodes); }
+bool Graph::has_node(Node n) const { return is_in_vector(n, nodes); }
 
-bool Graph::has_edge(const int& src, const int& dest) const
+bool Graph::has_edge(const Node& src, const Node& dest) const
 {
     if (adjout.find(src) == adjout.end()) {
         return false;
@@ -280,7 +280,7 @@ void Graph::reset_dist() {
     }
 }
 
-double Graph::distance(int src, int dest) const
+double Graph::distance(Node src, Node dest) const
 {
     if (dist) {
         return dist[src][dest];
@@ -289,7 +289,7 @@ double Graph::distance(int src, int dest) const
     }
 }
 
-double Graph::weight(int src, int dst) const
+double Graph::weight(Node src, Node dst) const
 {
     ASSERT(adjout.find(src) != adjout.end());
     ASSERT(has_edge(src, dst));

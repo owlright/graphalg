@@ -7,13 +7,14 @@
 namespace graphalg {
 using std::map;
 using std::pair;
+using Node = int;
 using Edge = pair<int, int>;
 using EdgeWeight = pair<int, double>;
 class Graph {
 public:
     void read_dot(const char* filename);
-    vector<int> dfs(int root, bool directionOut = true) const;
-    vector<int> bfs(int root, bool directionOut = true) const;
+    vector<Node> dfs(Node root, bool directionOut = true) const;
+    vector<Node> bfs(Node root, bool directionOut = true) const;
     bool is_tree() const;
     bool is_connected() const;
 
@@ -58,25 +59,25 @@ public:
     };
 
 public:
-    void add_edge(int src, int dest, double weight = 1.0, bool bidirectional = false);
-    void set_weight(int src, int dest, double weight = 1.0);
-    void remove_edge(int src, int dest);
-    void add_node(int n);
-    void remove_node(int n);
-    bool has_node(int n) const;
-    bool has_edge(const int& src, const int& dest) const;
+    void add_edge(Node src, Node dest, double weight = 1.0, bool bidirectional = false);
+    void set_weight(Node src, Node dest, double weight = 1.0);
+    void remove_edge(Node src, Node dest);
+    void add_node(Node n);
+    void remove_node(Node n);
+    bool has_node(Node n) const;
+    bool has_edge(const Node& src, const Node& dest) const;
     bool has_edge(const Edge&) const;
 
     void update_dist();
-    double distance(int src, int dest) const;
-    double weight(int src, int dst) const;
+    double distance(Node src, Node dest) const;
+    double weight(Node src, Node dst) const;
     int get_vertices_number() const { return adjout.size(); }
     int get_max_vertice() const { return max_vertice; }
 
 public:
-    const vector<int>& get_nodes() const { return nodes; }
+    const vector<Node>& get_nodes() const { return nodes; }
 
-    const vector<EdgeWeight>& out_neighbors(int src) const
+    const vector<EdgeWeight>& out_neighbors(Node src) const
     {
         if (adjout.find(src) != adjout.end()) {
             return adjout.at(src);
@@ -84,15 +85,15 @@ public:
             return emptyEdge;
         }
     }
-    const vector<EdgeWeight>& in_neighbors(int src) const
+    const vector<EdgeWeight>& in_neighbors(Node src) const
     {
         if (adjin.find(src) != adjin.end()) {
             return adjin.at(src);
         }
         return emptyEdge;
     }
-    int indegree(int v) const { return adjin.at(v).size(); }
-    int outdegree(int v) const { return adjout.at(v).size(); }
+    int indegree(Node v) const { return adjin.at(v).size(); }
+    int outdegree(Node v) const { return adjout.at(v).size(); }
     double get_cost() const;
 
 public:
@@ -100,10 +101,10 @@ public:
 
 private:
     double** dist { nullptr };
-    vector<int> nodes;
-    int max_vertice { -1 };
-    map<int, vector<EdgeWeight>> adjout;
-    map<int, vector<EdgeWeight>> adjin;
+    vector<Node> nodes;
+    Node max_vertice { -1 };
+    map<Node, vector<EdgeWeight>> adjout;
+    map<Node, vector<EdgeWeight>> adjin;
     vector<EdgeWeight> emptyEdge;
 
 private:
