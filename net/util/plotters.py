@@ -323,7 +323,7 @@ def plot(
         labels=nx.get_node_attributes(G, node_label_name)
         if node_label_name
         else {n: r'${}$'.format(n) for n in G},  # resort to node's index
-        font_size=9,
+        font_size=10,
         ax=ax,
         verticalalignment="center_baseline"
     )
