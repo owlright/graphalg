@@ -12,6 +12,9 @@ using Edge = pair<int, int>;
 using EdgeWeight = pair<int, double>;
 class Graph {
 public:
+    static Node INVALID_NODE;
+
+public:
     void read_dot(const char* filename);
     vector<Node> dfs(Node root, bool directionOut = true) const;
     vector<Node> bfs(Node root, bool directionOut = true) const;

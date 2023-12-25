@@ -8,6 +8,7 @@ namespace graphalg {
 using namespace graphalg::algorithms;
 using std::queue;
 using std::stack;
+Node Graph::INVALID_NODE = -1;
 bool is_in_vector(const Node& x, const vector<Node> vec)
 {
     for (auto& i : vec) {
@@ -62,7 +63,7 @@ void Graph::read_dot(const char* filename)
 
 vector<Node> Graph::dfs(Node root, bool directionOut) const
 {
-    ASSERT(has_node(Node));
+    ASSERT(has_node(root));
     vector<Node> result { root };
     stack<Node> st;
     st.push(root);
@@ -209,8 +210,8 @@ void Graph::remove_node(Node n)
         for (auto& entry : adjout) {
             vector<EdgeWeight>& neighbors = entry.second;
 
-            neighbors.erase(remove_if(neighbors.begin(), neighbors.end(),
-                                [n](const Edge& edge) { return edge.first == n; }),
+            neighbors.erase(
+                remove_if(neighbors.begin(), neighbors.end(), [n](const Edge& edge) { return edge.first == n; }),
                 neighbors.end());
         }
     }
@@ -263,7 +264,8 @@ void Graph::update_dist()
     floyd_warshall(dist, n);
 }
 
-void Graph::reset_dist() {
+void Graph::reset_dist()
+{
     ASSERT(dist);
     int n = get_max_vertice() + 1;
     for (int i = 0; i < n; i++) {
