@@ -349,16 +349,4 @@ vector<int> find_equal_nodes(
     return equal_nodes;
 }
 
-Graph edmonds(Graph& g)
-{
-    Graph dmst;
-    auto n = g.get_vertices_number();
-    vector<int> in(n, -1);
-    vector<double> const_cost(n, 0);
-    vector<int> prev(n, -1);
-    vector<int> parent(n, -1);
-    vector<vector<int>> children(n, vector<int>());
-    return dmst;
-}
-
 }
