@@ -184,7 +184,7 @@ def edmond_tarjan(g: nx.DiGraph, root: int) -> nx.DiGraph:
 
 def tarjan_branch(g: nx.DiGraph):
     # initialize
-    S_set = weightedUF(g.number_of_nodes()) # store circles if exist
+    S_set = weightedUF(g.number_of_nodes())  # store circles if exist
     W_set = weightedUF(g.number_of_nodes())
     enter = {i: (0, 0) for i in g}
     _min = {i: i for i in g}  # maybe super vertex
@@ -193,23 +193,30 @@ def tarjan_branch(g: nx.DiGraph):
     Q = {n: [(cost[e], e[0], e[1]) for e in g.in_edges(n)] for n in g}
     for _, v in Q.items():
         heapify(v)
+
     def SFIND(i):
         return S_set.find(i)
+
     def WFIND(i):
         return W_set.find(i)
+
     def WUNION(i, j):
         return W_set.union(i, j)
+
     def SUNION(i, j):
-        return W_set.union(i, j)
+        return S_set.union(i, j)
+
     def QUNION(i, j):
         for c, u, v in Q[j]:
             heappush(Q[i], (c, u, v))
+
     def ADD(val, k):
         _tmp = []
         for c, u, v in Q[k]:
             print(f"reduce {u,v} {c} to {c+val}")
-            _tmp.append((c+val, u, v))
+            _tmp.append((c + val, u, v))
         Q[k] = _tmp
+
     H = set()
     rset = set()
     while roots:
@@ -236,17 +243,17 @@ def tarjan_branch(g: nx.DiGraph):
                 x, y = i, j
                 # find edge with min cost
                 while (x, y) != (0, 0):
-                    if (cost[x, y] < val):
+                    if cost[x, y] < val:
                         val = cost[x, y]
                         vertex = SFIND(y)
                     x, y = enter[SFIND(x)]
                 print(f"minval={val}")
-                ADD(val-cost[i, j], k)
+                ADD(val - cost[i, j], k)
                 _min[k] = _min[vertex]
                 x, y = enter[SFIND(i)]
                 print(f"strongly connected set {SFIND(i)}'s in_edge {x, y} ")
                 while (x, y) != (0, 0):
-                    ADD(val-cost[x, y], SFIND(y))
+                    ADD(val - cost[x, y], SFIND(y))
                     QUNION(k, SFIND(y))
                     print(f"{k}<-{SFIND(y)}")
                     SUNION(k, SFIND(y))
@@ -255,9 +262,6 @@ def tarjan_branch(g: nx.DiGraph):
                 print()
     print(enter)
     print(_min)
-
-
-
 
 
 # t = edmond_tarjan(grid, 4)
