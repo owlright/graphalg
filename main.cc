@@ -31,21 +31,21 @@ int main()
     auto root = hosts[senders.size() + 1];
     vector<map<int, vector<int>>> equal_branch_nodes;
 
-    auto trees = takashami_trees(g, senders, root, forbiddens, &equal_branch_nodes);
+    auto tree = takashami_tree(g, senders, root);
     double cost = 0;
     for (auto s : senders)
         cost += g.distance(s, root);
     cout << "no compressed tree cost " << cost << endl;
-    ASSERT(trees.size() == equal_branch_nodes.size());
-    for (auto i = 0; i < trees.size(); i++) {
-        vector<int> branch_nodes;
-        auto t = extract_branch_tree(trees[i], senders, root, &branch_nodes);
-        cout << "tree " << i << " " << trees[i].get_cost() << endl;
-        trees[i].draw((std::string("tree") + std::to_string(i) + ".png").c_str());
-        // t.draw((std::string("branchtree") + std::to_string(i) + ".png").c_str());
-        // vector<int> path;
-        // dijistra(t, senders[1], root, &path);
+    // ASSERT(trees.size() == equal_branch_nodes.size());
+    // for (auto i = 0; i < trees.size(); i++) {
+    //     vector<int> branch_nodes;
+    //     auto t = extract_branch_tree(trees[i], senders, root, &branch_nodes);
+    //     cout << "tree " << i << " " << trees[i].get_cost() << endl;
+    //     trees[i].draw((std::string("tree") + std::to_string(i) + ".png").c_str());
+    //     // t.draw((std::string("branchtree") + std::to_string(i) + ".png").c_str());
+    //     // vector<int> path;
+    //     // dijistra(t, senders[1], root, &path);
 
-        cout << equal_branch_nodes[i] << endl;
-    }
+    //     cout << equal_branch_nodes[i] << endl;
+    // }
 }
