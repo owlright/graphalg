@@ -182,15 +182,19 @@ def edmond_tarjan(g: nx.DiGraph, root: int) -> nx.DiGraph:
     return expand(root)
 
 
-def tarjan_branch(g: nx.DiGraph):
+def tarjan1977finding(g: nx.DiGraph, sense=""):
+    """Implemention of [1]
+    [1] R. E. Tarjan, “Finding optimum branchings,” Networks, vol. 7, no. 1, pp. 25-35, 1977, doi: 10.1002/net.3230070103.
+    """
     # initialize
+    S_set = weightedUF(g.number_of_nodes())  # store circles if exist
     S_set = weightedUF(g.number_of_nodes())  # store circles if exist
     W_set = weightedUF(g.number_of_nodes())
     enter = {i: (0, 0) for i in g}
     _min = {i: i for i in g}  # maybe super vertex
     roots = set(g)
     cost = nx.get_edge_attributes(g, "weight")
-    Q = {n: [(cost[e], e[0], e[1]) for e in g.in_edges(n)] for n in g}
+    Q = {n: [(-cost[e], e[0], e[1]) for e in g.in_edges(n)] for n in g}
     for _, v in Q.items():
         heapify(v)
 
@@ -208,64 +212,76 @@ def tarjan_branch(g: nx.DiGraph):
 
     def QUNION(i, j):
         for c, u, v in Q[j]:
-            heappush(Q[i], (c, u, v))
+            heappush(Q[i], (-c, u, v))
 
     def ADD(val, k):
         _tmp = []
         for c, u, v in Q[k]:
             print(f"reduce {u,v} {c} to {c+val}")
             _tmp.append((c + val, u, v))
+            _tmp.append((c + val, u, v))
         Q[k] = _tmp
+
 
     H = set()
     rset = set()
     while roots:
         k = roots.pop()
+        print(f"explore root {k}")
         if not Q[k]:
+            print("no in edges, stop")
+            print()
             continue
         _, i, j = heappop(Q[k])
-        print(f"{i, j}")
+
         if cost[i, j] <= 0:
+            print(k, i, j)
             rset.add(k)
         elif SFIND(i) == k:
-            print(f"{i}is in strongly connected component {k}")
+            print(f"{i} {j} in the same S({k})")
             roots.add(k)
         else:
+            print(f"add {i, j} to H")
             H.add((i, j))
             if WFIND(i) != WFIND(j):
+                print(f"connect W({WFIND(i)}) to W({WFIND(j)}) using {i, j}")
                 WUNION(WFIND(i), WFIND(j))
                 enter[k] = (i, j)
             else:
-                print(f"{i} {j} in the same weakly connected set {WFIND(i)}")
-                print(f"cost{i,j}={cost[i, j]}")
+                print(f"{i} {j} in the same W({WFIND(i)}), So a circle is formed")
+                # print(f"cost{i,j}={cost[i, j]}")
                 val = 1e10
                 vertex = None
                 x, y = i, j
-                # find edge with min cost
+                # find edge with minimum cost along the path: (x_k,y_k),S_k,...,(x_1,x_1),S_1, x_k \in S_1
                 while (x, y) != (0, 0):
                     if cost[x, y] < val:
                         val = cost[x, y]
                         vertex = SFIND(y)
                     x, y = enter[SFIND(x)]
-                print(f"minval={val}")
-                ADD(val - cost[i, j], k)
-                _min[k] = _min[vertex]
+                print(f"find minval={val}")
+                ADD(val - cost[i, j], k)  # ? this maybe not necessary
+                _min[k] = _min[vertex]  # ! record the edge with minimum cost, but why?
+                print(f"W({k}) start with {vertex}")
                 x, y = enter[SFIND(i)]
-                print(f"strongly connected set {SFIND(i)}'s in_edge {x, y} ")
-                while (x, y) != (0, 0):
+                print(f"----Extend W({WFIND(i)}) to W({k})  ----")
+                print(f"S({SFIND(i)})'s enter {x, y} ")
+                while (x, y) != (0, 0):  # also reduce cost along the path: (x_k,y_k),S_k,...,(x_1,x_1),S_1,
                     ADD(val - cost[x, y], SFIND(y))
                     QUNION(k, SFIND(y))
-                    print(f"{k}<-{SFIND(y)}")
+                    print(f"abosorb S({SFIND(y)})'s in_edges")
                     SUNION(k, SFIND(y))
                     x, y = enter[SFIND(x)]
                 roots.add(k)
-                print()
+                print(f"---------------------------")
+        print()
+    print(rset)
     print(enter)
     print(_min)
 
 
 # t = edmond_tarjan(grid, 4)
-tarjan_branch(grid)
+tarjan1977finding(grid)
 # da = weightedUF(lecture.number_of_nodes())
 # for u, v in lecture.edges():
 #     print(u, v)
